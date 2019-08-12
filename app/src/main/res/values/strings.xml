@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Forecastr</string>
+    <string name="search_location">Search...</string>
 </resources>

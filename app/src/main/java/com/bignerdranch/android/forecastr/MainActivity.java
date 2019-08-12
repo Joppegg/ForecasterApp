@@ -26,7 +26,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
 
         String apiKey = "AIzaSyDt18yLpPPTSCkI26bimMNjl0mGvUcnd6s";
 
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 final LatLng latLng = place.getLatLng();
-                Log.i(TAG, "onPlaceSelected: "+ latLng.latitude + "\n" + latLng.longitude);
+                Log.i(TAG, "onPlaceSelected: "+ place.getName() + " " + latLng.latitude + "\n" + latLng.longitude);
             }
 
             @Override
