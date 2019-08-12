@@ -4,7 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +26,9 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
                 mTextViewLocationName.setText(place.getName());
                 mTextViewLocationLatitude.setText(String.valueOf(latLng.latitude));
                 Log.i(TAG, "onPlaceSelected: "+ place.getName() + " " + latLng.latitude + "\n" + latLng.longitude);
-
+                ForecastFetcher fetcher = new ForecastFetcher();
+                new SearchTask().execute();
             }
 
             @Override
@@ -73,5 +80,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private class SearchTask extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
 
+
+                ForecastFetcher fetcher = new ForecastFetcher();
+                fetcher.printArray();
+
+
+            return null;
+
+        }
+
+    }
 }
