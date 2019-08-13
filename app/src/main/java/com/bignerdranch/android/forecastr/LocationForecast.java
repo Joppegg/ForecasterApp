@@ -2,10 +2,8 @@ package com.bignerdranch.android.forecastr;
 
 public class LocationForecast {
     private Location mLocation;
-    private double mTemperature, mWindSpeed;
-    private int mWeatherSymbol;
     private int mIndexValue;
-    private String mValidTime;
+    private String mValidTime, mTemperature, mWeatherSymbol, mWindSpeed;
 
     public Location getLocation() {
         return mLocation;
@@ -33,28 +31,28 @@ public class LocationForecast {
 
 
 
-    public double getTemperature() {
+    public String getTemperature() {
         return mTemperature;
     }
 
-    public void setTemperature(double temperature) {
+    public void setTemperature(String temperature) {
         mTemperature = temperature;
     }
 
-    public double getWindSpeed() {
+    public String getWindSpeed() {
         return mWindSpeed;
     }
 
-    public void setWindSpeed(double windSpeed) {
+    public void setWindSpeed(String windSpeed) {
         mWindSpeed = windSpeed;
     }
 
 
-    public int getWeatherSymbol() {
+    public String getWeatherSymbol() {
         return mWeatherSymbol;
     }
 
-    public void setWeatherSymbol(int weatherSymbol) {
+    public void setWeatherSymbol(String weatherSymbol) {
         mWeatherSymbol = weatherSymbol;
     }
 }

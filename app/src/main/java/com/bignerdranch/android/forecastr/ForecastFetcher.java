@@ -21,13 +21,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForecastFetcher {
+    private Location mLocation;
     private static final String TAG = "ForecastFetcher";
     private static final Uri ENDPOINT = Uri.parse("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/");
     private List<LocationForecast> downloadLocationForecast(String url){
             List<LocationForecast>forecastList = new ArrayList<>();
         return null;
-
     }
+
+    public ForecastFetcher(Location location){
+        mLocation = location;
+    }
+
 
     public void printArray(){
         try {
@@ -73,7 +78,6 @@ public class ForecastFetcher {
     /**
      * This method parses the forecast information from the API for a certain location, creates
      * locationforecast objects and adds them to the locations list of forecast.
-
      * @throws JSONException
      */
     private void parseForecast(String jsonString)throws JSONException{
@@ -84,9 +88,38 @@ public class ForecastFetcher {
 
         //Loops through the timeseries array.
         for (int i = 0; i <forecastArray.length(); i++){
-            JSONObject forecastObject = forecastArray.getJSONObject(i);
-            Log.i(TAG, forecastObject.getString("validTime"));
+            LocationForecast locationForecast = new LocationForecast();
 
+            //This is one object with a validtime and an array called parameters.
+            JSONObject forecastObject = forecastArray.getJSONObject(i);
+            //Sets time.
+            locationForecast.setValidTime(forecastObject.getString("validTime"));
+            Log.i(TAG, "Time for forecast: " + locationForecast.getValidTime());
+
+            //Loops through all parameters
+            JSONArray parametersArray = forecastObject.getJSONArray("parameters");
+            Log.i(TAG, "length of param array: " + parametersArray.length());
+
+
+            for (int j =0; j<parametersArray.length(); j++){
+                JSONObject currentParameter = parametersArray.getJSONObject(j);
+                    Log.i(TAG, "Parameter name: " + currentParameter.getString("name"));
+                    if (currentParameter.getString("name").equals("t")){
+                        Log.i(TAG, "Temperature in Celsius: " + currentParameter.getString("values"));
+                        locationForecast.setTemperature(currentParameter.getString("values"));
+                    }
+                    else if (currentParameter.getString("name").equals("Wsymb2")){
+                        locationForecast.setWeatherSymbol(currentParameter.getString("values"));
+                        Log.i(TAG, "Weathersymbol: : " + currentParameter.getString("values"));
+                    }
+                    else if (currentParameter.getString("name").equals("ws")){
+                        locationForecast.setWindSpeed(currentParameter.getString("values"));
+                        Log.i(TAG, "Windspeed: " + currentParameter.getString("values"));
+                    }
+
+
+            }
+            mLocation.addForecast(locationForecast);
         }
 
 

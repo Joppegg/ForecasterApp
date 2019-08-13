@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     PlacesClient mPlacesClient;
     final String TAG = "forecastr.MainActivity";
-    final String APIKEY = "AIzaSyDt18yLpPPTSCkI26bimMNjl0mGvUcnd6s";
-    private TextView mTextViewLocationName, mTextViewLocationLatitude;
+    final String APIKEY = "AIzaSyCpJt91l68JY93EIxNuDaLZ8a4zgRnH5oU";
+    private TextView mTextViewLocationName, mTextViewLocationLatitude, mTextViewTemperature, mTextViewWindSpeed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mTextViewLocationName = findViewById(R.id.location_name);
         mTextViewLocationLatitude= findViewById(R.id.location_latitude);
+        mTextViewTemperature = findViewById(R.id.temperature);
+        mTextViewWindSpeed=findViewById(R.id.windspeed);
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         fragment.getView().setBackgroundColor(Color.GRAY);
 
@@ -66,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 mTextViewLocationName.setText(place.getName());
                 mTextViewLocationLatitude.setText(String.valueOf(latLng.latitude));
                 Log.i(TAG, "onPlaceSelected: "+ place.getName() + " " + latLng.latitude + "\n" + latLng.longitude);
-                ForecastFetcher fetcher = new ForecastFetcher();
-                new SearchTask().execute();
+                new SearchTask().execute(latLng);
             }
 
             @Override
@@ -80,18 +80,36 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private class SearchTask extends AsyncTask<Void,Void,Void> {
+    /**
+     * Updates current weather temperature, windspeed etc from the chosen lat/long.
+     *
+     *
+     */
+    private class SearchTask extends AsyncTask<LatLng,Void,Void> {
+        private LatLng mLatLng;
+        private Location mLocationToDisplay;
+
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(LatLng... params) {
+            mLocationToDisplay = new Location();
+            mLatLng = params[0];
+            mLocationToDisplay.setLatitude(mLatLng.latitude);
+            mLocationToDisplay.setLongitude(mLatLng.longitude);
 
-
-                ForecastFetcher fetcher = new ForecastFetcher();
-                fetcher.printArray();
-
+            ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
+            fetcher.printArray();
 
             return null;
 
         }
 
+
+        //Updates the ui - TEST. move later
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mTextViewTemperature.setText(mLocationToDisplay.getForeCast().get(0).getTemperature());
+            mTextViewWindSpeed.setText(mLocationToDisplay.getForeCast().get(0).getWindSpeed());
+        }
     }
 }
