@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForecastFetcher {
+
     private Location mLocation;
     private static final String TAG = "ForecastFetcher";
     private static final String JSONENDPOINT = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/";

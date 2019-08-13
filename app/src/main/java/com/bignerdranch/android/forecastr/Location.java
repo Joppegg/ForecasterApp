@@ -9,7 +9,7 @@ public class Location {
     private String mLocationName;
     private int mId; //Change this to double? goby googles documentation
     private ArrayList<LocationForecast> mForeCast = new ArrayList<>();
- DecimalFormat df = new DecimalFormat("#.000");
+    private DecimalFormat df = new DecimalFormat("#.000");
 
     public void addForecast(LocationForecast locationForecast){
         mForeCast.add(locationForecast);

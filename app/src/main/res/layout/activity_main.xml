@@ -24,12 +24,14 @@
         android:layout_height="wrap_content"
         android:id="@+id/location_name"
         android:textSize="24sp"
+        android:layout_gravity="center"
         />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/location_latitude"
         android:textSize="24sp"
+        android:layout_gravity="center"
         />
 
     <TextView
@@ -37,13 +39,25 @@
         android:layout_height="wrap_content"
         android:id="@+id/temperature"
         android:textSize="20sp"
+        android:layout_gravity="center"
         />
     <TextView
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/windspeed"
         android:textSize="18sp"
         />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/save_button"
+        android:text="@string/save_location_button"
+        />
+
+
     </LinearLayout>
 
 

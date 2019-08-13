@@ -94,8 +94,6 @@ public class MainActivity extends AppCompatActivity {
             mLatLng = params[0];
             mLocationToDisplay.setLatitude(mLatLng.latitude);
             mLocationToDisplay.setLongitude(mLatLng.longitude);
-
-
             ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
             fetcher.printArray();
 
