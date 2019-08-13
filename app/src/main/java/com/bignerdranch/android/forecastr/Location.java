@@ -1,32 +1,45 @@
 package com.bignerdranch.android.forecastr;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Location {
-    private double mLatitude, mLongitude;
+    private String mLatitude, mLongitude;
     private String mLocationName;
     private int mId; //Change this to double? goby googles documentation
     private ArrayList<LocationForecast> mForeCast = new ArrayList<>();
+ DecimalFormat df = new DecimalFormat("#.000");
 
     public void addForecast(LocationForecast locationForecast){
         mForeCast.add(locationForecast);
     }
 
-    public double getLatitude() {
+    public String getLatitude() {
         return mLatitude;
     }
 
+    /**
+     *
+     * Formats to 3 decimals (~ 100 meters) to avoid json errors for too specific coordinates.
+     * @param latitude
+     */
     public void setLatitude(double latitude) {
-        mLatitude = latitude;
+        mLatitude = df.format(latitude);
+
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return mLongitude;
     }
 
+    /**
+     * Formats to 3 decimals (~ 100 meters) to avoid json errors for too specific coordinates.
+     * @param longitude
+     */
     public void setLongitude(double longitude) {
-        mLongitude = longitude;
+        mLongitude = df.format(longitude);
+
     }
 
     public String getLocationName() {

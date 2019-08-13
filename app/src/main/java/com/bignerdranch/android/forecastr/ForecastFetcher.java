@@ -23,6 +23,7 @@ import java.util.List;
 public class ForecastFetcher {
     private Location mLocation;
     private static final String TAG = "ForecastFetcher";
+    private static final String JSONENDPOINT = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/";
     private static final Uri ENDPOINT = Uri.parse("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/");
     private List<LocationForecast> downloadLocationForecast(String url){
             List<LocationForecast>forecastList = new ArrayList<>();
@@ -34,6 +35,10 @@ public class ForecastFetcher {
     }
 
 
+    /**
+     *
+     * Test method for parsing json
+     */
     public void printArray(){
         try {
             String jsonString = new String (getUrlBytes());
@@ -48,8 +53,31 @@ public class ForecastFetcher {
 
     }
 
+    /**
+     * Opens connection to SMHI, reads the file and returns a bytearray with all text.
+     *
+     * @return byte[] byte stream with all text.
+     * @throws IOException
+     */
     public byte[] getUrlBytes() throws IOException {
-        URL url = new URL("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/17.158/lat/58.5812/data.json");
+        Uri.Builder builder = new Uri.Builder();
+        builder.scheme("https")
+                .authority("opendata-download-metfcst.smhi.se")
+                .appendPath("api")
+                .appendPath("category")
+                .appendPath("pmp3g")
+                .appendPath("version")
+                .appendPath("2")
+                .appendPath("geotype")
+                .appendPath("point")
+                .appendPath("lon")
+                .appendPath(mLocation.getLongitude())
+                .appendPath("lat")
+                .appendPath(mLocation.getLatitude())
+                .appendPath("data.json");
+
+        String myUrl = builder.build().toString();
+        URL url = new URL(myUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         Log.i(TAG, url.toString());
 
@@ -61,7 +89,6 @@ public class ForecastFetcher {
                 throw new IOException(connection.getResponseMessage() + ": with");
 
             }
-
             int bytesRead = 0;
             byte[] buffer = new byte[1024];
             while ((bytesRead = in.read(buffer)) > 0) {
@@ -81,7 +108,6 @@ public class ForecastFetcher {
      * @throws JSONException
      */
     private void parseForecast(String jsonString)throws JSONException{
-        //
 
         JSONObject jsonBody = new JSONObject(jsonString);
         JSONArray forecastArray = jsonBody.getJSONArray("timeSeries");
@@ -92,31 +118,26 @@ public class ForecastFetcher {
 
             //This is one object with a validtime and an array called parameters.
             JSONObject forecastObject = forecastArray.getJSONObject(i);
-            //Sets time.
+            //Sets time for the forecast.
             locationForecast.setValidTime(forecastObject.getString("validTime"));
-            Log.i(TAG, "Time for forecast: " + locationForecast.getValidTime());
-
             //Loops through all parameters
             JSONArray parametersArray = forecastObject.getJSONArray("parameters");
-            Log.i(TAG, "length of param array: " + parametersArray.length());
 
-
+            //Adds the relevant parameters (t = temperature, wsymb2 = weathersymbol, ws = windspeed)
             for (int j =0; j<parametersArray.length(); j++){
                 JSONObject currentParameter = parametersArray.getJSONObject(j);
-                    Log.i(TAG, "Parameter name: " + currentParameter.getString("name"));
+
                     if (currentParameter.getString("name").equals("t")){
-                        Log.i(TAG, "Temperature in Celsius: " + currentParameter.getString("values"));
+
                         locationForecast.setTemperature(currentParameter.getString("values"));
                     }
                     else if (currentParameter.getString("name").equals("Wsymb2")){
                         locationForecast.setWeatherSymbol(currentParameter.getString("values"));
-                        Log.i(TAG, "Weathersymbol: : " + currentParameter.getString("values"));
+
                     }
                     else if (currentParameter.getString("name").equals("ws")){
                         locationForecast.setWindSpeed(currentParameter.getString("values"));
-                        Log.i(TAG, "Windspeed: " + currentParameter.getString("values"));
                     }
-
 
             }
             mLocation.addForecast(locationForecast);

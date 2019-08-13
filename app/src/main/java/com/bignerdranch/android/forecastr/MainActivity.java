@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
     /**
      * Updates current weather temperature, windspeed etc from the chosen lat/long.
      *
@@ -96,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
             mLocationToDisplay.setLatitude(mLatLng.latitude);
             mLocationToDisplay.setLongitude(mLatLng.longitude);
 
+
             ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
             fetcher.printArray();
 
             return null;
-
         }
 
 
