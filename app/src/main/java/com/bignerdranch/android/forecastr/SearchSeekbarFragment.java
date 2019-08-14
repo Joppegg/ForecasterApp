@@ -26,6 +26,7 @@ public class SearchSeekbarFragment extends Fragment {
     private SeekBar mSeekBar;
     private TextView mTextViewSeekBarTime, mTextViewTemperature, mTextViewWindSpeed;
     private ImageView mImageViewForecast;
+    private String TAG = "SearchSeekbarFragment";
 
 
     public SearchSeekbarFragment() {
@@ -74,7 +75,7 @@ public class SearchSeekbarFragment extends Fragment {
             }
         });
 
-        setSeekBarValues(0);
+        //setSeekBarValues(0);
 
 
         return v;
@@ -88,12 +89,11 @@ public class SearchSeekbarFragment extends Fragment {
      *
      */
     private void setSeekBarValues(int i){
-        mLocationForecast = mLocation.getForeCast().get(i);
 
-        mTextViewTemperature.setText(mLocationForecast.getTemperature() + " C°");
-        mTextViewWindSpeed.setText("Windspeed: " + mLocationForecast.getWindSpeed() + "m/s");
-        mTextViewSeekBarTime.setText(mLocationForecast.getValidTime());
-        int weatherSymbol = Integer.valueOf(mLocationForecast.getWeatherSymbol());
+        mTextViewTemperature.setText(mLocation.getForeCast().get(i).getTemperature() + " C°");
+        mTextViewWindSpeed.setText("Windspeed: " + mLocation.getForeCast().get(i).getWindSpeed() + "m/s");
+        mTextViewSeekBarTime.setText(mLocation.getForeCast().get(i).getValidTime());
+        int weatherSymbol = Integer.valueOf(mLocation.getForeCast().get(i).getWeatherSymbol());
         weatherSymbol--;
         mImageViewForecast.setImageDrawable(getResources().getDrawable(mDrawableResources[weatherSymbol]));
 

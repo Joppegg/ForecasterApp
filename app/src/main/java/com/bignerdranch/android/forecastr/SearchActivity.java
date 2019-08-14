@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -135,6 +137,16 @@ public class SearchActivity  extends AppCompatActivity {
             manager.beginTransaction()
                     .replace(R.id.seekbarLayout, seekbarFragment,seekbarFragment.getTag())
                     .commit();
+
+            SearchForecastFragment searchForecastFragment = new SearchForecastFragment(mLocationToDisplay);
+            FragmentManager fragmentManager2 = getSupportFragmentManager();
+            fragmentManager2.beginTransaction()
+                    .replace(R.id.forecastPlaceholder, searchForecastFragment, searchForecastFragment.getTag())
+                    .commit();
+
+
+
+
 
         }
     }

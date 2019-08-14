@@ -3,6 +3,7 @@ package com.bignerdranch.android.forecastr;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Location {
     private String mLatitude, mLongitude;
@@ -25,7 +26,8 @@ public class Location {
      * @param latitude
      */
     public void setLatitude(double latitude) {
-        mLatitude = df.format(latitude);
+        mLatitude = String.format(Locale.ENGLISH, "%.3f", latitude);
+
 
     }
 
@@ -38,7 +40,8 @@ public class Location {
      * @param longitude
      */
     public void setLongitude(double longitude) {
-        mLongitude = df.format(longitude);
+        mLongitude = String.format(Locale.ENGLISH, "%.3f", longitude);
+    //    mLongitude = df.format(longitude);
 
     }
 
