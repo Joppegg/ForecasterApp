@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
@@ -38,11 +39,6 @@ public class SearchActivity  extends AppCompatActivity {
 
 
 
-
-        mTextViewLocationName = findViewById(R.id.location_name);
-        mTextViewLocationLatitude= findViewById(R.id.location_latitude);
-        mTextViewTemperature = findViewById(R.id.temperature);
-        mTextViewWindSpeed=findViewById(R.id.windspeed);
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         fragment.getView().setBackgroundColor(Color.GRAY);
 
@@ -63,9 +59,6 @@ public class SearchActivity  extends AppCompatActivity {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 final LatLng latLng = place.getLatLng();
-                mTextViewLocationName.setText(place.getName());
-                mTextViewLocationLatitude.setText(String.valueOf(latLng.latitude));
-                Log.i(TAG, "onPlaceSelected: "+ place.getName() + " " + latLng.latitude + "\n" + latLng.longitude);
                 new SearchTask().execute(latLng);
             }
 
@@ -105,6 +98,8 @@ public class SearchActivity  extends AppCompatActivity {
 
 
         });
+
+
     }
 
 
@@ -134,8 +129,13 @@ public class SearchActivity  extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            mTextViewTemperature.setText(mLocationToDisplay.getForeCast().get(0).getTemperature());
-            mTextViewWindSpeed.setText(mLocationToDisplay.getForeCast().get(0).getWindSpeed());
+
+            SearchSeekbarFragment seekbarFragment = new SearchSeekbarFragment(mLocationToDisplay);
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction()
+                    .replace(R.id.seekbarLayout, seekbarFragment,seekbarFragment.getTag())
+                    .commit();
+
         }
     }
 }

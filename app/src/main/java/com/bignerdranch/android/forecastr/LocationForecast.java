@@ -32,11 +32,13 @@ public class LocationForecast {
 
 
     public String getTemperature() {
+
         return mTemperature;
     }
 
     public void setTemperature(String temperature) {
-        mTemperature = temperature;
+        String trimmedTemperature = temperature.substring(1, temperature.length()-1);
+        mTemperature = trimmedTemperature;
     }
 
     public String getWindSpeed() {
@@ -44,7 +46,8 @@ public class LocationForecast {
     }
 
     public void setWindSpeed(String windSpeed) {
-        mWindSpeed = windSpeed;
+        String trimmedWindSpeed = windSpeed.substring(1, windSpeed.length()-1);
+        mWindSpeed = trimmedWindSpeed;
     }
 
 
@@ -53,6 +56,7 @@ public class LocationForecast {
     }
 
     public void setWeatherSymbol(String weatherSymbol) {
-        mWeatherSymbol = weatherSymbol;
+        String trimmedSymbol = weatherSymbol.substring(1, weatherSymbol.length()-1);
+        mWeatherSymbol = trimmedSymbol;
     }
 }
