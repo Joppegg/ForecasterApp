@@ -7,10 +7,11 @@ import java.util.Locale;
 
 public class Location {
     private String mLatitude, mLongitude;
-    private String mLocationName;
+    private String mLocationName = "Test Testsson";
     private int mId; //Change this to double? goby googles documentation
     private ArrayList<LocationForecast> mForeCast = new ArrayList<>();
-    private DecimalFormat df = new DecimalFormat("#.000");
+
+
 
     public void addForecast(LocationForecast locationForecast){
         mForeCast.add(locationForecast);

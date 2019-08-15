@@ -7,7 +7,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,18 +29,32 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.FileOutputStream;
 import java.util.Arrays;
 
 public class SearchActivity  extends AppCompatActivity {
+    private Location mLocationToDisplay;
     PlacesClient mPlacesClient;
     final String TAG = "forecastr.SearchActivity";
     final String APIKEY = "AIzaSyCpJt91l68JY93EIxNuDaLZ8a4zgRnH5oU";
-    private TextView mTextViewLocationName, mTextViewLocationLatitude, mTextViewTemperature, mTextViewWindSpeed;
+    private Button mSaveButton;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        final SharedPreference mSharedPreference = new SharedPreference();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        mSaveButton = findViewById(R.id.save_button);
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+            mSharedPreference.addFavourite(getApplicationContext(), mLocationToDisplay);
+               Toast.makeText(getApplicationContext(), mLocationToDisplay.getLocationName(), Toast.LENGTH_SHORT).show();
+           }
+       });
+
 
 
 
@@ -104,6 +121,19 @@ public class SearchActivity  extends AppCompatActivity {
 
     }
 
+    /**
+     * Saves the location to the internal storage, to be used in "Favourites
+     * param Location to be saved
+     * @return true if location is saved, false if location already exists.
+     */
+    public boolean saveLocation(Location locationToSave){
+
+        Location location = locationToSave;
+      //  openFileOutput()
+
+        return true;
+
+    }
 
     /**
      * Updates current weather temperature, windspeed etc from the chosen lat/long.
@@ -112,7 +142,7 @@ public class SearchActivity  extends AppCompatActivity {
      */
     private class SearchTask extends AsyncTask<LatLng,Void,Void> {
         private LatLng mLatLng;
-        private Location mLocationToDisplay;
+
 
         @Override
         protected Void doInBackground(LatLng... params) {

@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -47,5 +48,14 @@ public class FavouritesActivity extends AppCompatActivity {
 
 
         });
+
+        FavouritesFragment favouritesFragment = new FavouritesFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.favourites_placeholder, favouritesFragment, favouritesFragment.getTag())
+                .commit();
+
+
+
+
     }
 }
