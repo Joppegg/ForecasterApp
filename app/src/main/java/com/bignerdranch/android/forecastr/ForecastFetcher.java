@@ -121,6 +121,7 @@ public class ForecastFetcher {
             JSONObject forecastObject = forecastArray.getJSONObject(i);
             //Sets time for the forecast.
             locationForecast.setValidTime(forecastObject.getString("validTime"));
+            locationForecast.setDateTime(forecastObject.getString("validTime"));
             //Loops through all parameters
             JSONArray parametersArray = forecastObject.getJSONArray("parameters");
 
@@ -142,6 +143,9 @@ public class ForecastFetcher {
 
             }
             mLocation.addForecast(locationForecast);
+            if (locationForecast.isMidDay()){
+                mLocation.addMidDayForeCast(locationForecast);
+            }
         }
 
 

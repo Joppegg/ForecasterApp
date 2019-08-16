@@ -55,10 +55,12 @@ public class SharedPreference {
             return null;
         }
 
+      /*
         for(Location location : favourites){
             Log.i("Shared", location.getLocationName());
 
         }
+        */
         return  (ArrayList<Location>) favourites;
 
     }

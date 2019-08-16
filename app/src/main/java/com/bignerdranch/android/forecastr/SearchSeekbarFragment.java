@@ -57,6 +57,7 @@ public class SearchSeekbarFragment extends Fragment {
         mTextViewWindSpeed = v.findViewById(R.id.seekbar_windspeed);
         mImageViewForecast = v.findViewById(R.id.imageview_weathersymbol);
 
+        setSeekBarValues(0);
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
@@ -75,7 +76,7 @@ public class SearchSeekbarFragment extends Fragment {
             }
         });
 
-        //setSeekBarValues(0);
+
 
 
         return v;
@@ -89,10 +90,12 @@ public class SearchSeekbarFragment extends Fragment {
      *
      */
     private void setSeekBarValues(int i){
-
-        mTextViewTemperature.setText(mLocation.getForeCast().get(i).getTemperature() + " C°");
-        mTextViewWindSpeed.setText("Windspeed: " + mLocation.getForeCast().get(i).getWindSpeed() + "m/s");
-        mTextViewSeekBarTime.setText(mLocation.getForeCast().get(i).getValidTime());
+        String temperature = mLocation.getForeCast().get(i).getTemperature() + " C°";
+        String windSpeed =  "Windspeed: " + mLocation.getForeCast().get(i).getWindSpeed() + " m/s";
+        String dateAndTime = mLocation.getForeCast().get(i).getDateTime().dayOfWeek().getAsText() + " " + mLocation.getForeCast().get(i).getDayAndHour();
+        mTextViewTemperature.setText(temperature);
+        mTextViewWindSpeed.setText(windSpeed);
+        mTextViewSeekBarTime.setText(dateAndTime);
         int weatherSymbol = Integer.valueOf(mLocation.getForeCast().get(i).getWeatherSymbol());
         weatherSymbol--;
         mImageViewForecast.setImageDrawable(getResources().getDrawable(mDrawableResources[weatherSymbol]));

@@ -10,8 +10,24 @@ public class Location {
     private String mLocationName = "Test Testsson";
     private int mId; //Change this to double? goby googles documentation
     private ArrayList<LocationForecast> mForeCast = new ArrayList<>();
+    private ArrayList<LocationForecast> mForeCastMidDay = new ArrayList<>();
 
+    public ArrayList<LocationForecast> getForeCastMidDay() {
+        return mForeCastMidDay;
+    }
 
+    public void setForeCastMidDay(ArrayList<LocationForecast> foreCastMidDay) {
+        mForeCastMidDay = foreCastMidDay;
+    }
+
+    /**
+     * Adds a locationforecast to the mid-day forecast.
+     * @param locationForecast
+     */
+    public void addMidDayForeCast(LocationForecast locationForecast){
+        mForeCastMidDay.add(locationForecast);
+
+    }
 
     public void addForecast(LocationForecast locationForecast){
         mForeCast.add(locationForecast);
