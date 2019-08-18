@@ -47,10 +47,13 @@ public class SearchActivity  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         mSaveButton = findViewById(R.id.save_button);
+
+        //Parses to a locationparser to facilitate serializing.
         mSaveButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-            mSharedPreference.addFavourite(getApplicationContext(), mLocationToDisplay);
+               LocationParser locationParserToSave = new LocationParser(mLocationToDisplay);
+              mSharedPreference.addFavourite(getApplicationContext(), locationParserToSave);
                Toast.makeText(getApplicationContext(), mLocationToDisplay.getLocationName(), Toast.LENGTH_SHORT).show();
            }
        });
@@ -78,7 +81,7 @@ public class SearchActivity  extends AppCompatActivity {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 final LatLng latLng = place.getLatLng();
-                new SearchTask().execute(latLng);
+                new SearchTask().execute(place);
             }
 
             @Override
@@ -140,16 +143,22 @@ public class SearchActivity  extends AppCompatActivity {
      *
      *
      */
-    private class SearchTask extends AsyncTask<LatLng,Void,Void> {
+    private class SearchTask extends AsyncTask<Place,Void,Void> {
         private LatLng mLatLng;
-
+        private Place mPlace;
 
         @Override
-        protected Void doInBackground(LatLng... params) {
+        protected Void doInBackground(Place... params) {
             mLocationToDisplay = new Location();
-            mLatLng = params[0];
+            //set location id.
+            mPlace = params[0];
+
+
+            mLatLng = mPlace.getLatLng();
             mLocationToDisplay.setLatitude(mLatLng.latitude);
             mLocationToDisplay.setLongitude(mLatLng.longitude);
+            mLocationToDisplay.setLocationId(mPlace.getId());
+            mLocationToDisplay.setLocationName(mPlace.getName());
             ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
             fetcher.printArray();
 

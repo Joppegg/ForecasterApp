@@ -1,6 +1,7 @@
 package com.bignerdranch.android.forecastr;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,7 +11,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
 
 public class FavouritesActivity extends AppCompatActivity {
 
@@ -49,13 +54,54 @@ public class FavouritesActivity extends AppCompatActivity {
 
         });
 
-        FavouritesFragment favouritesFragment = new FavouritesFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.favourites_placeholder, favouritesFragment, favouritesFragment.getTag())
-                .commit();
+
+
+        new SearchTask().execute();
+
+
+    }
+
+    /**
+     * Updates current weather temperature, windspeed etc from the chosen lat/long.
+     *
+     *
+     */
+    private class SearchTask extends AsyncTask<Void,Void,Void> {
+        private SharedPreference mSharedPreference = new SharedPreference();
+        ArrayList<LocationParser> locationsToBeParsed = mSharedPreference.getFavourites(getApplicationContext());
+        ArrayList<Location> locationsToDisplay = new ArrayList<Location>();
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            // Loops all Locations to be parsed into the favouriteslist.
+            for (LocationParser location : locationsToBeParsed){
+                 Location mLocationToDisplay = new Location();
+                 mLocationToDisplay.setLatitude(location.getLatitude());
+                 mLocationToDisplay.setLongitude(location.getLongitude());
+                 mLocationToDisplay.setLocationId(location.getLocationId());
+                 mLocationToDisplay.setLocationName(location.getLocationName());
+
+                 ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
+                 fetcher.printArray();
+                 locationsToDisplay.add(mLocationToDisplay);
+
+            }
+            return null;
+        }
+
+
+        //Updates the ui - TEST. move later
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            FavouritesFragment favouritesFragment = new FavouritesFragment(locationsToDisplay);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.favourites_placeholder, favouritesFragment, favouritesFragment.getTag())
+                    .commit();
 
 
 
-
+        }
     }
 }

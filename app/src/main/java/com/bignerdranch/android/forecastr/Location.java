@@ -7,7 +7,25 @@ import java.util.Locale;
 
 public class Location {
     private String mLatitude, mLongitude;
-    private String mLocationName = "Test Testsson";
+    private String mLocationName;
+    private String locationId;
+
+    public void setLatitude(String latitude) {
+        mLatitude = latitude;
+    }
+
+    public void setLongitude(String longitude) {
+        mLongitude = longitude;
+    }
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
+    }
+
     private int mId; //Change this to double? goby googles documentation
     private ArrayList<LocationForecast> mForeCast = new ArrayList<>();
     private ArrayList<LocationForecast> mForeCastMidDay = new ArrayList<>();
@@ -45,8 +63,8 @@ public class Location {
     public void setLatitude(double latitude) {
         mLatitude = String.format(Locale.ENGLISH, "%.3f", latitude);
 
-
     }
+
 
     public String getLongitude() {
         return mLongitude;

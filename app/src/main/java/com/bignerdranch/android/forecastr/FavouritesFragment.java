@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+
 /**
  *
  * this class handles the implementation of the favourites list
@@ -19,13 +21,18 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class FavouritesFragment extends Fragment {
 
+    private ArrayList<Location> mLocations;
+
+    public FavouritesFragment(ArrayList<Location> locations){
+        mLocations = locations;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.recyclerview_favourites, container, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.favourites_recyclerview);
-        FavouritesListAdapter listAdapter = new FavouritesListAdapter(getActivity());
+        FavouritesListAdapter listAdapter = new FavouritesListAdapter(getActivity(), mLocations);
         recyclerView.setAdapter(listAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);

@@ -60,7 +60,6 @@ public class LocationForecast {
         Boolean isMidDay = mDateTime.getHourOfDay() == MIDDAY;
         setMidDay(isMidDay);
 
-
     }
 
 

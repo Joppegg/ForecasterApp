@@ -18,17 +18,20 @@ import java.util.List;
 public class SharedPreference {
     public static final String PREFS_NAME = "FORECAST_APP";
     public static final String FAVOURITES = "LOCATION_Favourite";
+    private static final String TAG = "SharedPreference";
     public SharedPreference() {
         super();
     }
 
 
-    public void saveFavourites(Context context, List<Location> favourites){
+    public void saveFavourites(Context context, List<LocationParser> favourites){
         SharedPreferences settings;
         SharedPreferences.Editor editor;
 
+
         settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = settings.edit();
+
 
         Gson gson = new Gson();
         String jsonFavourites = gson.toJson(favourites);
@@ -37,19 +40,23 @@ public class SharedPreference {
         editor.commit();
     }
 
-    public ArrayList<Location> getFavourites(Context context){
+    public ArrayList<LocationParser> getFavourites(Context context){
         SharedPreferences settings;
-        List<Location> favourites;
+        List<LocationParser> favourites;
 
         settings = context.getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
 
+
         if (settings.contains(FAVOURITES)){
             String jsonFavourites = settings.getString(FAVOURITES, null);
             Gson gson = new Gson();
-            Location[] favouriteItems = gson.fromJson(jsonFavourites, Location[].class);
+            LocationParser[] favouriteItems = gson.fromJson(jsonFavourites, LocationParser[].class);
             favourites = Arrays.asList(favouriteItems);
-            favourites = new ArrayList<Location>(favourites);
+            favourites = new ArrayList<LocationParser>(favourites);
+            //Logs size of array
+            Log.i(TAG, "Number of entries: " +  favourites.size());
+            return  (ArrayList<LocationParser>) favourites;
 
         } else {
             return null;
@@ -61,21 +68,22 @@ public class SharedPreference {
 
         }
         */
-        return  (ArrayList<Location>) favourites;
+
 
     }
 
-    public void addFavourite(Context context, Location location){
-        List<Location> favourites = getFavourites(context);
+    public void addFavourite(Context context, LocationParser location){
+        List<LocationParser> favourites = getFavourites(context);
         if (favourites == null){
-            favourites = new ArrayList<Location>();
+            favourites = new ArrayList<LocationParser>();
         }
         favourites.add(location);
         saveFavourites(context, favourites);
+        Log.i(TAG, "Saved with id: " + location.getLocationId() + " " + location.getLocationName());
     }
 
-    public void removeFavourite(Context context, Location location){
-        ArrayList<Location> favourites = getFavourites(context);
+    public void removeFavourite(Context context, LocationParser location){
+        ArrayList<LocationParser> favourites = getFavourites(context);
         if (favourites != null){
             favourites.remove(location);
             saveFavourites(context, favourites);

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
 
     >
 
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/imageview_favourites_weathersymbol"
+        android:src="@mipmap/ic_launcher"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,6 +23,7 @@
         android:id="@+id/location_name_favourites_list"
         android:textColor="@color/quantum_black_text"
         android:layout_marginStart="20dp"
+        android:textSize="24sp"
         />
 
     <TextView
@@ -21,7 +32,11 @@
         android:text="Temperature here "
         android:id="@+id/temperature_text_favourites_list"
         android:textColor="@color/quantum_black_text"
+        android:textSize="24sp"
         android:layout_marginStart="20dp"
+
         />
+    </LinearLayout>
+
 
 </LinearLayout>
