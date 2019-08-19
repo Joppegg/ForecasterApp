@@ -53,9 +53,18 @@ public class FavouritesActivity extends AppCompatActivity {
 
 
         });
+        new SearchTask().execute();
+    }
 
 
-
+    /**
+     *
+     * When location is deleted, updates the list with new items.
+     *
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
         new SearchTask().execute();
 
 

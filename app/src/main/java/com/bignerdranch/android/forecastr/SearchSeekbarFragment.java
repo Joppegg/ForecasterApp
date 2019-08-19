@@ -92,7 +92,7 @@ public class SearchSeekbarFragment extends Fragment {
     private void setSeekBarValues(int i){
         String temperature = mLocation.getForeCast().get(i).getTemperature() + " C°";
         String windSpeed =  "Windspeed: " + mLocation.getForeCast().get(i).getWindSpeed() + " m/s";
-        String dateAndTime = mLocation.getForeCast().get(i).getDateTime().dayOfWeek().getAsText() + " " + mLocation.getForeCast().get(i).getDayAndHour();
+       String dateAndTime = mLocation.getForeCast().get(i).getDateTime().dayOfWeek().getAsText() + " " + mLocation.getForeCast().get(i).getDayAndHour();
         mTextViewTemperature.setText(temperature);
         mTextViewWindSpeed.setText(windSpeed);
         mTextViewSeekBarTime.setText(dateAndTime);

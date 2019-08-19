@@ -2,6 +2,8 @@ package com.bignerdranch.android.forecastr;
 
 import android.nfc.Tag;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.joda.time.DateTime;
@@ -18,15 +20,40 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Locale;
 
-public class LocationForecast {
+public class LocationForecast implements Parcelable {
     private Location mLocation;
     private int mIndexValue;
     private String mValidTime, mTemperature, mWeatherSymbol, mWindSpeed;
     private static final String TAG = "LocationForecast";
     private DateTime mDateTime;
-    private final int MIDDAY = 12;
+    private  int MIDDAY = 12;
 
+    public LocationForecast(){
 
+    }
+
+    protected LocationForecast(Parcel in) {
+        mLocation = in.readParcelable(Location.class.getClassLoader());
+        mIndexValue = in.readInt();
+        mValidTime = in.readString();
+        mTemperature = in.readString();
+        mWeatherSymbol = in.readString();
+        mWindSpeed = in.readString();
+        MIDDAY = in.readInt();
+        isMidDay = in.readByte() != 0;
+    }
+
+    public static final Creator<LocationForecast> CREATOR = new Creator<LocationForecast>() {
+        @Override
+        public LocationForecast createFromParcel(Parcel in) {
+            return new LocationForecast(in);
+        }
+
+        @Override
+        public LocationForecast[] newArray(int size) {
+            return new LocationForecast[size];
+        }
+    };
 
     public boolean isMidDay() {
         return isMidDay;
@@ -116,5 +143,23 @@ public class LocationForecast {
     public void setWeatherSymbol(String weatherSymbol) {
         String trimmedSymbol = weatherSymbol.substring(1, weatherSymbol.length()-1);
         mWeatherSymbol = trimmedSymbol;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeParcelable(mLocation, i);
+        parcel.writeInt(mIndexValue);
+        parcel.writeString(mValidTime);
+        parcel.writeString(mTemperature);
+        parcel.writeString(mWeatherSymbol);
+        parcel.writeString(mWindSpeed);
+        parcel.writeInt(MIDDAY);
+        parcel.writeByte((byte) (isMidDay ? 1 : 0));
+
     }
 }

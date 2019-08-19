@@ -2,12 +2,14 @@ package com.bignerdranch.android.forecastr;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -28,10 +30,8 @@ public class SharedPreference {
         SharedPreferences settings;
         SharedPreferences.Editor editor;
 
-
         settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = settings.edit();
-
 
         Gson gson = new Gson();
         String jsonFavourites = gson.toJson(favourites);
@@ -40,13 +40,15 @@ public class SharedPreference {
         editor.commit();
     }
 
+
+
+
     public ArrayList<LocationParser> getFavourites(Context context){
         SharedPreferences settings;
         List<LocationParser> favourites;
 
         settings = context.getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
-
 
         if (settings.contains(FAVOURITES)){
             String jsonFavourites = settings.getString(FAVOURITES, null);
@@ -62,33 +64,69 @@ public class SharedPreference {
             return null;
         }
 
-      /*
-        for(Location location : favourites){
-            Log.i("Shared", location.getLocationName());
-
-        }
-        */
 
 
     }
 
-    public void addFavourite(Context context, LocationParser location){
+    /**
+     *
+     *Adds a location.
+     * @param context
+     * @param location
+     * @return
+     */
+    public boolean addFavourite(Context context, LocationParser location){
         List<LocationParser> favourites = getFavourites(context);
         if (favourites == null){
-            favourites = new ArrayList<LocationParser>();
+            favourites = new ArrayList<>();
         }
-        favourites.add(location);
-        saveFavourites(context, favourites);
-        Log.i(TAG, "Saved with id: " + location.getLocationId() + " " + location.getLocationName());
+
+        if (!doesLocationExist(location, context)){
+            favourites.add(location);
+            saveFavourites(context, favourites);
+            Log.i(TAG, "Saved with id: " + location.getLocationId() + " " + location.getLocationName());
+            return true;
+        }
+        return false;
+
     }
 
     public void removeFavourite(Context context, LocationParser location){
-        ArrayList<LocationParser> favourites = getFavourites(context);
-        if (favourites != null){
-            favourites.remove(location);
-            saveFavourites(context, favourites);
-        }
+        List<LocationParser> favourites = getFavourites(context);
+        Log.i(TAG," Before size" + favourites.size());
+        Log.i(TAG, "To be removed " + location.getLocationName());
 
+
+        for (LocationParser locationParser : new ArrayList<>(favourites)) {
+
+            if (locationParser.getLocationId().equals(location.getLocationId())) {
+                favourites.remove(locationParser);
+            }
+        }
+        saveFavourites(context, favourites);
+
+
+
+
+
+        Log.i(TAG, "after " + favourites.size());
+        Log.i(TAG, "After real array: " + getFavourites(context).size());
+
+
+
+
+
+    }
+
+    public boolean doesLocationExist(LocationParser location, Context context){
+        ArrayList<LocationParser> locations = getFavourites(context);
+
+        for (LocationParser locationParser : locations){
+            if (locationParser.getLocationId().equals(location.getLocationId())){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

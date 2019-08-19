@@ -1,14 +1,42 @@
 package com.bignerdranch.android.forecastr;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class Location {
+public class Location implements Parcelable {
     private String mLatitude, mLongitude;
     private String mLocationName;
     private String locationId;
+
+    public Location (){
+
+    }
+
+    protected Location(Parcel in) {
+        mLatitude = in.readString();
+        mLongitude = in.readString();
+        mLocationName = in.readString();
+        locationId = in.readString();
+        mForeCast = in.createTypedArrayList(LocationForecast.CREATOR);
+        mForeCastMidDay = in.createTypedArrayList(LocationForecast.CREATOR);
+    }
+
+    public static final Creator<Location> CREATOR = new Creator<Location>() {
+        @Override
+        public Location createFromParcel(Parcel in) {
+            return new Location(in);
+        }
+
+        @Override
+        public Location[] newArray(int size) {
+            return new Location[size];
+        }
+    };
 
     public void setLatitude(String latitude) {
         mLatitude = latitude;
@@ -26,7 +54,6 @@ public class Location {
         this.locationId = locationId;
     }
 
-    private int mId; //Change this to double? goby googles documentation
     private ArrayList<LocationForecast> mForeCast = new ArrayList<>();
     private ArrayList<LocationForecast> mForeCastMidDay = new ArrayList<>();
 
@@ -88,13 +115,7 @@ public class Location {
         mLocationName = locationName;
     }
 
-    public int getId() {
-        return mId;
-    }
 
-    public void setId(int id) {
-        mId = id;
-    }
 
     public ArrayList<LocationForecast> getForeCast() {
         return mForeCast;
@@ -102,5 +123,20 @@ public class Location {
 
     public void setForeCast(ArrayList<LocationForecast> foreCast) {
         mForeCast = foreCast;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mLatitude);
+        parcel.writeString(mLongitude);
+        parcel.writeString(mLocationName);
+        parcel.writeString(locationId);
+        parcel.writeTypedList(mForeCast);
+        parcel.writeTypedList(mForeCastMidDay);
     }
 }

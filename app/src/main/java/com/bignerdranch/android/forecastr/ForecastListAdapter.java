@@ -59,6 +59,9 @@ public class ForecastListAdapter extends RecyclerView.Adapter {
             int weatherSymbol = Integer.valueOf(mLocation.getForeCastMidDay().get(position).getWeatherSymbol());
             mImageView.setImageResource(mWeatherSymbol.getDrawableResources(weatherSymbol));
 
+
+
+
         }
 
         @Override
@@ -66,4 +69,5 @@ public class ForecastListAdapter extends RecyclerView.Adapter {
 
         }
     }
+
 }

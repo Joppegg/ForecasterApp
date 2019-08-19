@@ -53,8 +53,13 @@ public class SearchActivity  extends AppCompatActivity {
            @Override
            public void onClick(View view) {
                LocationParser locationParserToSave = new LocationParser(mLocationToDisplay);
-              mSharedPreference.addFavourite(getApplicationContext(), locationParserToSave);
-               Toast.makeText(getApplicationContext(), mLocationToDisplay.getLocationName(), Toast.LENGTH_SHORT).show();
+               if (mSharedPreference.addFavourite(getApplicationContext(), locationParserToSave)){
+                   Toast.makeText(getApplicationContext(), mLocationToDisplay.getLocationName(), Toast.LENGTH_SHORT).show();
+               }
+               else{
+                   Toast.makeText(getApplicationContext(), "Already saved.", Toast.LENGTH_SHORT).show();
+               }
+
            }
        });
 

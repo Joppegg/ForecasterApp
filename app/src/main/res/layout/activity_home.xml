@@ -14,12 +14,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <TextView
+
+        <Button
+            android:id="@+id/update_location_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/home_navigation"
-            />
+            android:text="Update Location"/>
 
+        <TextView
+            android:text="test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/location_text_placeholder"
+            />
 
     </LinearLayout>
 
