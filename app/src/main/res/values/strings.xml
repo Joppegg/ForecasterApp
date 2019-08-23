@@ -12,5 +12,9 @@
     <string name="add_favr">Added to Favorites</string>
     <string name="remove_favr">Removed from Favorites</string>
     <string name="no_favorites_items">No Favorites</string>
+    <string name="title_activity_maps">Map</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="error_text">No network connection found. Please enable networking and restart the application!</string>
 </resources>

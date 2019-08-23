@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -108,9 +112,11 @@ public class LocationActivity extends AppCompatActivity {
     private class SearchTask extends AsyncTask<LocationParser,Void,Void> {
         private Location mLocationToDisplay;
         private LocationParser mLocationParser;
+        private boolean mIsDataFetchedOk;
 
         @Override
         protected Void doInBackground(LocationParser... params) {
+            mIsDataFetchedOk = true;
             mLocationToDisplay = new Location();
             //set location id.
             mLocationParser = params[0];
@@ -120,7 +126,17 @@ public class LocationActivity extends AppCompatActivity {
             mLocationToDisplay.setLocationId(mLocationParser.getLocationId());
             mLocationToDisplay.setLocationName(mLocationParser.getLocationName());
             ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
-            fetcher.printArray();
+            try {
+
+                fetcher.printArray();
+            }
+            catch (IOException ioe){
+                Log.i(TAG, "ioexception");
+                mIsDataFetchedOk = false;
+            }catch (JSONException joe){
+                Log.i(TAG, "joexception");
+                mIsDataFetchedOk = false;
+            }
             mLocation = mLocationToDisplay;
 
             return null;
@@ -132,17 +148,26 @@ public class LocationActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            SearchSeekbarFragment seekbarFragment = new SearchSeekbarFragment(mLocationToDisplay);
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction()
-                    .replace(R.id.location_seekbarLayout, seekbarFragment,seekbarFragment.getTag())
-                    .commit();
+            if (mIsDataFetchedOk) {
+                SearchSeekbarFragment seekbarFragment = new SearchSeekbarFragment(mLocationToDisplay);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.location_seekbarLayout, seekbarFragment, seekbarFragment.getTag())
+                        .commit();
 
-            SearchForecastFragment searchForecastFragment = new SearchForecastFragment(mLocationToDisplay);
-            FragmentManager fragmentManager2 = getSupportFragmentManager();
-            fragmentManager2.beginTransaction()
-                    .replace(R.id.location_forecastPlaceholder, searchForecastFragment, searchForecastFragment.getTag())
-                    .commit();
+                SearchForecastFragment searchForecastFragment = new SearchForecastFragment(mLocationToDisplay);
+                FragmentManager fragmentManager2 = getSupportFragmentManager();
+                fragmentManager2.beginTransaction()
+                        .replace(R.id.location_forecastPlaceholder, searchForecastFragment, searchForecastFragment.getTag())
+                        .commit();
+            }
+            else{
+                ErrorFragment errorFragment = new ErrorFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.location_seekbarLayout, errorFragment, errorFragment.getTag())
+                        .commitAllowingStateLoss();
+
+            }
 
 
 

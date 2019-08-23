@@ -1,8 +1,10 @@
 package com.bignerdranch.android.forecastr;
 
 
+import android.nfc.Tag;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -22,7 +24,6 @@ public class SearchSeekbarFragment extends Fragment {
 
     private int [] mDrawableResources;
     private Location mLocation;
-    private LocationForecast mLocationForecast;
     private SeekBar mSeekBar;
     private TextView mTextViewSeekBarTime, mTextViewTemperature, mTextViewWindSpeed;
     private ImageView mImageViewForecast;
@@ -37,14 +38,47 @@ public class SearchSeekbarFragment extends Fragment {
         mLocation = location;
     }
 
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("midday", mLocation.getForeCastMidDay());
+        outState.putParcelable("location", mLocation);
+        Log.i(TAG, "saving" + mLocation.getLocationName());
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState!= null){
+            mLocation = savedInstanceState.getParcelable("location");
+            mLocation.setForeCastMidDay(savedInstanceState.<LocationForecast>getParcelableArrayList("midday"));
+            Log.i(TAG, "savedinstancestate is not null");
+            Log.i(TAG ,"test miday");
+            Log.i(TAG, mLocation.getLocationName() + " name");
+
+
+
+
+        }
+        else {
+            Log.i(TAG, "savedinstancestate is null");
+        }
+
         mDrawableResources = new int[27];
         initiateImageViews();
-        super.onCreate(savedInstanceState);
+        setSeekBarValues(0);
+        super.onActivityCreated(savedInstanceState);
+
+
+
+
         //Do all data here for the Seekbar
 
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,7 +91,7 @@ public class SearchSeekbarFragment extends Fragment {
         mTextViewWindSpeed = v.findViewById(R.id.seekbar_windspeed);
         mImageViewForecast = v.findViewById(R.id.imageview_weathersymbol);
 
-        setSeekBarValues(0);
+
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {

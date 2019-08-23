@@ -2,6 +2,7 @@ package com.bignerdranch.android.forecastr;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,19 +26,24 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONException;
+
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class SearchActivity  extends AppCompatActivity {
     private Location mLocationToDisplay;
     PlacesClient mPlacesClient;
-    final String TAG = "forecastr.SearchActivity";
+    final String TAG = "SearchActivity";
     final String APIKEY = "AIzaSyCpJt91l68JY93EIxNuDaLZ8a4zgRnH5oU";
     private Button mSaveButton;
+    private Place mPlace;
 
 
     @Override
@@ -46,15 +52,19 @@ public class SearchActivity  extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+
+
         mSaveButton = findViewById(R.id.save_button);
 
-        //Parses to a locationparser to facilitate serializing.
+        //Parses to a locationparser to facilitate serializing to gson.
         mSaveButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
                LocationParser locationParserToSave = new LocationParser(mLocationToDisplay);
                if (mSharedPreference.addFavourite(getApplicationContext(), locationParserToSave)){
                    Toast.makeText(getApplicationContext(), mLocationToDisplay.getLocationName(), Toast.LENGTH_SHORT).show();
+
                }
                else{
                    Toast.makeText(getApplicationContext(), "Already saved.", Toast.LENGTH_SHORT).show();
@@ -62,8 +72,6 @@ public class SearchActivity  extends AppCompatActivity {
 
            }
        });
-
-
 
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
@@ -78,15 +86,18 @@ public class SearchActivity  extends AppCompatActivity {
                 (AutocompleteSupportFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.autocomplete_fragment);
 
+        autocompleteSupportFragment.setCountry("SE");
         //Sets the place fields when the user clicks on an autocompleted field. ie, selecting Stockholm sets all fields to sthlm-variables.
         autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID,Place.Field.LAT_LNG,Place.Field.NAME));
+
 
         //Listener for selecting new place.
         autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                final LatLng latLng = place.getLatLng();
                 new SearchTask().execute(place);
+              mPlace = place;
+                mSaveButton.setEnabled(true);
             }
 
             @Override
@@ -94,6 +105,8 @@ public class SearchActivity  extends AppCompatActivity {
 
             }
         });
+
+
 
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -126,22 +139,20 @@ public class SearchActivity  extends AppCompatActivity {
 
         });
 
+        if (savedInstanceState != null){
+            Log.i(TAG, " not null");
+            mPlace = savedInstanceState.getParcelable("place");
+            mLocationToDisplay = savedInstanceState.getParcelable("location");
+
+            if (mPlace != null) {
+                Log.i(TAG, mPlace.getName());
+             //   new SearchTask().execute(mPlace);
+            }
+        }
+
 
     }
 
-    /**
-     * Saves the location to the internal storage, to be used in "Favourites
-     * param Location to be saved
-     * @return true if location is saved, false if location already exists.
-     */
-    public boolean saveLocation(Location locationToSave){
-
-        Location location = locationToSave;
-      //  openFileOutput()
-
-        return true;
-
-    }
 
     /**
      * Updates current weather temperature, windspeed etc from the chosen lat/long.
@@ -151,47 +162,78 @@ public class SearchActivity  extends AppCompatActivity {
     private class SearchTask extends AsyncTask<Place,Void,Void> {
         private LatLng mLatLng;
         private Place mPlace;
+        private boolean mIsDataFetchedOk;
+
 
         @Override
         protected Void doInBackground(Place... params) {
+            mIsDataFetchedOk = true;
             mLocationToDisplay = new Location();
             //set location id.
             mPlace = params[0];
-
 
             mLatLng = mPlace.getLatLng();
             mLocationToDisplay.setLatitude(mLatLng.latitude);
             mLocationToDisplay.setLongitude(mLatLng.longitude);
             mLocationToDisplay.setLocationId(mPlace.getId());
             mLocationToDisplay.setLocationName(mPlace.getName());
+
             ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
-            fetcher.printArray();
+
+            try {
+                fetcher.printArray();
+            }
+            catch (IOException ioe){
+                Log.i(TAG, "ioexception");
+                mIsDataFetchedOk = false;
+
+            }
+            catch (JSONException joe){
+                Log.i(TAG, "jsonexception");
+                mIsDataFetchedOk = false;
+            }
 
             return null;
         }
 
 
-        //Updates the ui - TEST. move later
+        //Updates the ui
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            SearchSeekbarFragment seekbarFragment = new SearchSeekbarFragment(mLocationToDisplay);
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction()
-                    .replace(R.id.seekbarLayout, seekbarFragment,seekbarFragment.getTag())
-                    .commit();
+            if (mIsDataFetchedOk) {
+                Log.i(TAG, mLocationToDisplay.getForeCast().get(0).getValidTime());
 
-            SearchForecastFragment searchForecastFragment = new SearchForecastFragment(mLocationToDisplay);
-            FragmentManager fragmentManager2 = getSupportFragmentManager();
-            fragmentManager2.beginTransaction()
-                    .replace(R.id.forecastPlaceholder, searchForecastFragment, searchForecastFragment.getTag())
-                    .commit();
+                SearchSeekbarFragment seekbarFragment = new SearchSeekbarFragment(mLocationToDisplay);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.seekbarLayout, seekbarFragment, seekbarFragment.getTag())
+                        .commit();
 
+                SearchForecastFragment searchForecastFragment = new SearchForecastFragment(mLocationToDisplay);
+                FragmentManager fragmentManager2 = getSupportFragmentManager();
+                fragmentManager2.beginTransaction()
+                        .replace(R.id.forecastPlaceholder, searchForecastFragment, searchForecastFragment.getTag())
+                        .commit();
 
+            }
+            else{
+                ErrorFragment errorFragment = new ErrorFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.seekbarLayout, errorFragment, errorFragment.getTag())
+                        .commitAllowingStateLoss();
 
+            }
 
 
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelable("place",mPlace);
+        savedInstanceState.putParcelable("location", mLocationToDisplay);
     }
 }

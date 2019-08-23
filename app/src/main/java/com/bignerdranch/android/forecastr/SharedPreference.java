@@ -60,8 +60,24 @@ public class SharedPreference {
             Log.i(TAG, "Number of entries: " +  favourites.size());
             return  (ArrayList<LocationParser>) favourites;
 
-        } else {
-            return null;
+        }
+        //If there is no saved sharedpreferences, create an empty arraylist and return it.
+        else {
+
+            SharedPreferences.Editor editor;
+
+            settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            editor = settings.edit();
+
+            favourites = new ArrayList<LocationParser>();
+            Gson gson = new Gson();
+            String jsonFavourites = gson.toJson(favourites);
+
+            editor.putString(FAVOURITES, jsonFavourites);
+            editor.commit();
+            return (ArrayList<LocationParser>) favourites;
+            //TODO RETURNA ALLTID EN LISTA. ÄVEN OM DEN ÄR TOM.
+            // annars blir det error första gången man installerar.
         }
 
 
@@ -121,6 +137,9 @@ public class SharedPreference {
     public boolean doesLocationExist(LocationParser location, Context context){
         ArrayList<LocationParser> locations = getFavourites(context);
 
+        if (location==null){
+            return false;
+        }
         for (LocationParser locationParser : locations){
             if (locationParser.getLocationId().equals(location.getLocationId())){
                 return true;

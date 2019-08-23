@@ -13,20 +13,61 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/locate_layout">
 
+        <Button
+            android:id="@+id/allow_location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Update location"/>
         <Button
             android:id="@+id/update_location_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Update Location"/>
+            android:text="Select location"/>
 
-        <TextView
-            android:text="test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/location_text_placeholder"
-            />
+
+
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/location_text_placeholder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/seekbarPlaceHolder"
+        app:layout_constraintStart_toStartOf="@+id/seekbarPlaceHolder"
+        app:layout_constraintTop_toBottomOf="@+id/locate_layout" />
+
+    <LinearLayout
+        android:id="@+id/seekbarPlaceHolder"
+        android:layout_width="395dp"
+        android:layout_height="340dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/location_text_placeholder">
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/forecastPlaceholder"
+        android:layout_width="395dp"
+        android:layout_height="340dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekbarPlaceHolder"
+        app:layout_constraintBottom_toTopOf="@id/nav_view"
+        >
 
     </LinearLayout>
 

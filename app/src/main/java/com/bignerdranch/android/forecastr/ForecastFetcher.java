@@ -40,18 +40,10 @@ public class ForecastFetcher {
      *
      * Test method for parsing json
      */
-    public void printArray(){
-        try {
+    public void printArray() throws IOException, JSONException {
             String jsonString = new String (getUrlBytes());
             Log.i(TAG, jsonString);
             parseForecast(jsonString);
-
-        }catch (JSONException joe){
-            Log.i(TAG, "sket sig: " + joe);
-        }catch (IOException ioe){
-            Log.i(TAG, "ioe");
-        }
-
     }
 
     /**

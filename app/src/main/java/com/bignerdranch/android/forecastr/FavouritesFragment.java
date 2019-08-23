@@ -27,12 +27,28 @@ public class FavouritesFragment extends Fragment  implements FavouritesListAdapt
     private static final String TAG = "FavouritesFragment";
     private SharedPreference mSharedPreference = new SharedPreference();
 
+    public FavouritesFragment(){
+
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("locations", mLocations);
+
+    }
+
     public FavouritesFragment(ArrayList<Location> locations){
         mLocations = locations;
     }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        if (savedInstanceState!=null)
+        {
+            mLocations = savedInstanceState.getParcelableArrayList("locations");
+        }
         View view =  inflater.inflate(R.layout.recyclerview_favourites, container, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.favourites_recyclerview);
