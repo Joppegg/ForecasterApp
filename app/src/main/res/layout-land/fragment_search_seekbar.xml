@@ -27,7 +27,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="Temperature here"
                 android:textSize="20sp"
                 android:textColor="@color/quantum_black_text"
                 />
@@ -37,7 +36,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="Windspeed here"
                 android:textSize="16sp"
                 android:textColor="@color/quantum_black_text"
                 />
@@ -46,7 +44,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="Time should update here"
                 android:textSize="16sp"
                 android:textColor="@color/quantum_black_text"
                 />

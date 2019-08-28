@@ -13,8 +13,9 @@
     <string name="remove_favr">Removed from Favorites</string>
     <string name="no_favorites_items">No Favorites</string>
     <string name="title_activity_maps">Map</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="error_text">No network connection found. Please enable networking and restart the application!</string>
+    <string name="error_text">Something went wrong! Try checking your network connection and select a location in Sweden.</string>
+    <string name="update_location">Update location</string>
+    <string name="select_location">Select location</string>
+    <string name="delete_location">Delete location</string>
 </resources>

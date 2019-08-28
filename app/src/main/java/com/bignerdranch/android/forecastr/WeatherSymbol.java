@@ -7,6 +7,9 @@ package com.bignerdranch.android.forecastr;
 public class WeatherSymbol {
     private int [] mDrawableResources;
 
+    /**
+     * Initiate the drawables.
+     */
     public  WeatherSymbol(){
         mDrawableResources = new int[27];
         mDrawableResources[0] = R.drawable.sunny_weather1;
@@ -38,6 +41,9 @@ public class WeatherSymbol {
         mDrawableResources[26] = R.drawable.snow_15_17_25_27;
     }
 
+    /**
+     * Returns the imageresource.
+     */
     public  int getDrawableResources(int i){
         return mDrawableResources[i-1];
     }

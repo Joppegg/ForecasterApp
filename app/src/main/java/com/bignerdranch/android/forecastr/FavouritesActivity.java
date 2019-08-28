@@ -1,10 +1,8 @@
 package com.bignerdranch.android.forecastr;
 
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,8 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONException;
@@ -28,7 +24,6 @@ public class FavouritesActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
-
         BottomNavigationView navView = findViewById(R.id.nav_view);
 
         Menu menu = navView.getMenu();
@@ -58,6 +53,7 @@ public class FavouritesActivity extends AppCompatActivity {
 
 
         });
+        //Executes a searchtask to display all favourites.
         new SearchTask().execute();
     }
 
@@ -76,8 +72,9 @@ public class FavouritesActivity extends AppCompatActivity {
     }
 
     /**
-     * Updates current weather temperature, windspeed etc from the chosen lat/long.
      *
+     * Fetches the forecast information from all the saved favourites to present them in a recyclerview.
+     * if it is unable to fetch the requested information it catches these exceptions and sets fetched state to be false.
      *
      */
     private class SearchTask extends AsyncTask<Void,Void,Void> {
@@ -98,25 +95,23 @@ public class FavouritesActivity extends AppCompatActivity {
                     mLocationToDisplay.setLocationId(location.getLocationId());
                     mLocationToDisplay.setLocationName(location.getLocationName());
                     ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
-                    fetcher.printArray();
+                    fetcher.fetchForecast();
                     locationsToDisplay.add(mLocationToDisplay);
-
                 }
             }catch (IOException ioe){
-                Log.i(TAG, "ioexception");
                 mIsDataFetchedOk = false;
 
             }catch (JSONException joe){
-                Log.i(TAG, "joexception");
                 mIsDataFetchedOk = false;
             }
-
-
             return null;
         }
 
 
-        //Updates the ui
+        /**
+         * Updates the UI, displaying a recyclerview with favourites if the fetch was successful.
+         * if the fetch was not successful, instead shows an errorfragment.
+         */
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);

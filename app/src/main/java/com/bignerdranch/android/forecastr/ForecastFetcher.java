@@ -20,37 +20,37 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class handles fetching all the forecast data.
+ * It uses SMHI's provided data: https://opendata-download-metfcst.smhi.se/
+ * By sending the location latitude and longitude a jsonfile is read and returned.
+ *
+ */
+
 public class ForecastFetcher {
 
     private Location mLocation;
     private static final String TAG = "ForecastFetcher";
-    private static final String JSONENDPOINT = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/";
-    private static final Uri ENDPOINT = Uri.parse("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/");
-    private List<LocationForecast> downloadLocationForecast(String url){
-            List<LocationForecast>forecastList = new ArrayList<>();
-        return null;
-    }
 
+    // Constructor taking the location to be fetched for.
     public ForecastFetcher(Location location){
         mLocation = location;
     }
 
-
     /**
+     * This method is called from the calling classes to fetch the forecast for a given location.
+
      *
-     * Test method for parsing json
      */
-    public void printArray() throws IOException, JSONException {
+    public void fetchForecast() throws IOException, JSONException {
             String jsonString = new String (getUrlBytes());
-            Log.i(TAG, jsonString);
             parseForecast(jsonString);
     }
 
     /**
-     * Opens connection to SMHI, reads the file and returns a bytearray with all text.
-     *
+     * Opens connection to SMHI, reads the file and returns a bytearray with all text, which will be parsd into json.
      * @return byte[] byte stream with all text.
-     * @throws IOException
+     * @throws IOException if the connection is not successful.
      */
     public byte[] getUrlBytes() throws IOException {
         Uri.Builder builder = new Uri.Builder();
@@ -69,18 +69,18 @@ public class ForecastFetcher {
                 .appendPath(mLocation.getLatitude())
                 .appendPath("data.json");
 
+        //Builds the url and opens a connection.
         String myUrl = builder.build().toString();
         URL url = new URL(myUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        Log.i(TAG, url.toString());
 
+        //tries to read the website and saves it in a byte array, then disconnects.
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             InputStream in = connection.getInputStream();
 
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 throw new IOException(connection.getResponseMessage() + ": with");
-
             }
             int bytesRead = 0;
             byte[] buffer = new byte[1024];
@@ -92,7 +92,6 @@ public class ForecastFetcher {
         } finally {
             connection.disconnect();
         }
-
 
     }
     /**
@@ -108,12 +107,12 @@ public class ForecastFetcher {
         //Loops through the timeseries array.
         for (int i = 0; i <forecastArray.length(); i++){
             LocationForecast locationForecast = new LocationForecast();
-
-            //This is one object with a validtime and an array called parameters.
             JSONObject forecastObject = forecastArray.getJSONObject(i);
+
             //Sets time for the forecast.
             locationForecast.setValidTime(forecastObject.getString("validTime"));
             locationForecast.setDateTime(forecastObject.getString("validTime"));
+
             //Loops through all parameters
             JSONArray parametersArray = forecastObject.getJSONArray("parameters");
 
@@ -132,8 +131,8 @@ public class ForecastFetcher {
                     else if (currentParameter.getString("name").equals("ws")){
                         locationForecast.setWindSpeed(currentParameter.getString("values"));
                     }
-
             }
+            //This checks if the locationForecast object is MIDDAY (12.00), if so adds it to the locations MidDayforecast list.
             mLocation.addForecast(locationForecast);
             if (locationForecast.isMidDay()){
                 mLocation.addMidDayForeCast(locationForecast);

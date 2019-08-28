@@ -1,25 +1,19 @@
 package com.bignerdranch.android.forecastr;
 
-import android.nfc.Tag;
-import android.os.Build;
+
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.Locale;
 
+/**
+ * This class represents a forecast for a given time and a given location.
+ * Handles storing the temperature, weathersymbol, windspeed and time.
+ *
+ *
+ */
 public class LocationForecast implements Parcelable {
     private Location mLocation;
     private int mIndexValue;
@@ -27,11 +21,12 @@ public class LocationForecast implements Parcelable {
     private static final String TAG = "LocationForecast";
     private DateTime mDateTime;
     private  int MIDDAY = 12;
-
+    private boolean isMidDay;
     public LocationForecast(){
 
     }
 
+    //For serializing.
     protected LocationForecast(Parcel in) {
         mLocation = in.readParcelable(Location.class.getClassLoader());
         mIndexValue = in.readInt();
@@ -55,22 +50,40 @@ public class LocationForecast implements Parcelable {
         }
     };
 
+
+    /**
+     *
+     * Checks if the forecast is mid day(12.00)
+     * @return true if middday
+     */
     public boolean isMidDay() {
         return isMidDay;
     }
 
+    /**
+     *Sets the forecast to be midday
+     * @param midDay
+     */
     public void setMidDay(boolean midDay) {
         isMidDay = midDay;
     }
 
-    private boolean isMidDay;
 
-
+    /**
+     * Gets the day and hour by formatting the ISO 8601 format to HH:mm for cleaner presentation in UI.
+     * @return
+     */
     public String getDayAndHour(){
         DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm");
         return fmt.print(mDateTime);
 
     }
+
+    /**
+     *
+     * Gets the datetime.
+     * @return datetime.
+     */
     public DateTime getDateTime() {
         return mDateTime;
     }
@@ -78,73 +91,102 @@ public class LocationForecast implements Parcelable {
     /**
      * Workaround for parsing String to time with help of JodaTime.
      * If the hour of the day corresponds to MIDDAY, set the isMidDay boolean to true.
+     * Sets the forecast to be midday if the specific forecasts hour is equal to midday (12.00)
      * @param localDateTime
      */
     public void setDateTime(String localDateTime)  {
-        DateTime dt = new DateTime(localDateTime );
+        DateTime dt = new DateTime(localDateTime);
         mDateTime = dt;
-
-        Boolean isMidDay = mDateTime.getHourOfDay() == MIDDAY;
+        boolean isMidDay = mDateTime.getHourOfDay() == MIDDAY;
         setMidDay(isMidDay);
-
     }
 
-
+    /**
+     * Returns the owner location.
+     * @return Location mlocation.
+     */
     public Location getLocation() {
         return mLocation;
     }
 
+    /**
+     * Sets the owner location.
+     * @param location
+     */
     public void setLocation(Location location) {
         mLocation = location;
     }
 
+
+    /**
+     * Gets the valid time (The time the forecast is valid for)
+     * @return
+     */
     public String getValidTime() {
         return mValidTime;
     }
 
+    /**
+     * Sets the valid time.
+     * @param validTime
+     */
     public void setValidTime(String validTime) {
         mValidTime = validTime;
     }
 
-    public int getIndexValue() {
-        return mIndexValue;
-    }
-
-    public void setIndexValue(int indexValue) {
-        mIndexValue = indexValue;
-    }
-
-
-
+    /**
+     * Gets the forecast temperature.
+     * @return String temperature.
+     */
     public String getTemperature() {
-
         return mTemperature;
     }
 
+    /**
+     * Sets the forecast temperature.
+     * Trims the brackets from the retrieved json format.
+     * @param temperature the temperature.
+     */
     public void setTemperature(String temperature) {
-        String trimmedTemperature = temperature.substring(1, temperature.length()-1);
-        mTemperature = trimmedTemperature;
+        mTemperature  = temperature.substring(1, temperature.length()-1);
     }
 
+    /**
+     * Gets the forecast windspeed.
+     * @return String windspeed.
+     */
     public String getWindSpeed() {
         return mWindSpeed;
     }
 
+    /**
+     * Sets the forecast windspeed.
+     * @param windSpeed the windspeed.
+     */
     public void setWindSpeed(String windSpeed) {
         String trimmedWindSpeed = windSpeed.substring(1, windSpeed.length()-1);
         mWindSpeed = trimmedWindSpeed;
     }
 
-
+    /**
+     * Gets the weathersymbol used to present a visual of the forecasted weather.
+     * More info here: https://opendata-download-metfcst.smhi.se/
+     * @return String representing an int 0-27 to use for weather symbols.
+     */
     public String getWeatherSymbol() {
         return mWeatherSymbol;
     }
 
+    /**
+     * Sets the weathersymbol to be used for the forecast, and trims the brackets.
+     * @param weatherSymbol the forecasts weather symbol.
+     */
     public void setWeatherSymbol(String weatherSymbol) {
-        String trimmedSymbol = weatherSymbol.substring(1, weatherSymbol.length()-1);
-        mWeatherSymbol = trimmedSymbol;
+        mWeatherSymbol  = weatherSymbol.substring(1, weatherSymbol.length()-1);
     }
 
+
+    //For serializing
     @Override
     public int describeContents() {
         return 0;

@@ -13,8 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Helper class handles the saving and retrieving of locations in favourites.
- *
+ * Helper class handles the saving and retrieving of locations from Shared Preference using Gson.
  *
  */
 public class SharedPreference {
@@ -26,6 +25,11 @@ public class SharedPreference {
     }
 
 
+    /**
+     * Converts an arraylist with LocationParser into a JSON-string through Gson and saves it in shared preferences.
+     * @param context the context
+     * @param favourites the list with locations to be saved.
+     */
     public void saveFavourites(Context context, List<LocationParser> favourites){
         SharedPreferences settings;
         SharedPreferences.Editor editor;
@@ -37,12 +41,16 @@ public class SharedPreference {
         String jsonFavourites = gson.toJson(favourites);
 
         editor.putString(FAVOURITES, jsonFavourites);
-        editor.commit();
+        editor.apply();
     }
 
 
-
-
+    /**
+     * Returns a list with the current locations saved.
+     * if there are no saved preferences, instead return an empty arraylist.
+     * @param context the context
+     * @return favourites, ArrayList with all the saved locations
+     */
     public ArrayList<LocationParser> getFavourites(Context context){
         SharedPreferences settings;
         List<LocationParser> favourites;
@@ -50,22 +58,19 @@ public class SharedPreference {
         settings = context.getSharedPreferences(PREFS_NAME,
                 Context.MODE_PRIVATE);
 
+        //Checks if there are any saved locations.
         if (settings.contains(FAVOURITES)){
             String jsonFavourites = settings.getString(FAVOURITES, null);
             Gson gson = new Gson();
             LocationParser[] favouriteItems = gson.fromJson(jsonFavourites, LocationParser[].class);
             favourites = Arrays.asList(favouriteItems);
             favourites = new ArrayList<LocationParser>(favourites);
-            //Logs size of array
-            Log.i(TAG, "Number of entries: " +  favourites.size());
             return  (ArrayList<LocationParser>) favourites;
 
         }
         //If there is no saved sharedpreferences, create an empty arraylist and return it.
         else {
-
             SharedPreferences.Editor editor;
-
             settings = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             editor = settings.edit();
 
@@ -74,10 +79,8 @@ public class SharedPreference {
             String jsonFavourites = gson.toJson(favourites);
 
             editor.putString(FAVOURITES, jsonFavourites);
-            editor.commit();
+            editor.apply();
             return (ArrayList<LocationParser>) favourites;
-            //TODO RETURNA ALLTID EN LISTA. ÄVEN OM DEN ÄR TOM.
-            // annars blir det error första gången man installerar.
         }
 
 
@@ -87,8 +90,9 @@ public class SharedPreference {
     /**
      *
      *Adds a location.
-     * @param context
-     * @param location
+     * @param context the context
+     * @param location the location to be added.
+     * Returns true if the location is added, and false otherwise (if it is saved already).
      * @return
      */
     public boolean addFavourite(Context context, LocationParser location){
@@ -100,19 +104,19 @@ public class SharedPreference {
         if (!doesLocationExist(location, context)){
             favourites.add(location);
             saveFavourites(context, favourites);
-            Log.i(TAG, "Saved with id: " + location.getLocationId() + " " + location.getLocationName());
             return true;
         }
         return false;
 
     }
 
+    /**
+     * Removes a location from the saved list.
+     * @param context the context
+     * @param location location to be removed.
+     */
     public void removeFavourite(Context context, LocationParser location){
         List<LocationParser> favourites = getFavourites(context);
-        Log.i(TAG," Before size" + favourites.size());
-        Log.i(TAG, "To be removed " + location.getLocationName());
-
-
         for (LocationParser locationParser : new ArrayList<>(favourites)) {
 
             if (locationParser.getLocationId().equals(location.getLocationId())) {
@@ -120,20 +124,15 @@ public class SharedPreference {
             }
         }
         saveFavourites(context, favourites);
-
-
-
-
-
-        Log.i(TAG, "after " + favourites.size());
-        Log.i(TAG, "After real array: " + getFavourites(context).size());
-
-
-
-
-
     }
 
+
+    /**
+     * Helper method to see if the location exists (is saved):
+     * @param location the location to be checked.
+     * @param context the ocntext.
+     * @return
+     */
     public boolean doesLocationExist(LocationParser location, Context context){
         ArrayList<LocationParser> locations = getFavourites(context);
 

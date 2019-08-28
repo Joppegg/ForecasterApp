@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SearchActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -82,7 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:text="Save Location"
+        android:text="@string/save_location_button"
         android:textSize="18sp"
         android:enabled="false"
         app:layout_constraintBottom_toTopOf="@id/nav_view"

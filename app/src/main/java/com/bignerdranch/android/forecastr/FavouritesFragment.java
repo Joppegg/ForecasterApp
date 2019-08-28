@@ -17,20 +17,19 @@ import java.util.ArrayList;
 
 /**
  *
- * this class handles the implementation of the favourites list
+ * This class handles the implementation of the favourites list.
  *
  */
 public class FavouritesFragment extends Fragment  implements FavouritesListAdapter.OnLocationListener {
 
     private ArrayList<Location> mLocations;
     private FavouritesListAdapter mListAdapter;
-    private static final String TAG = "FavouritesFragment";
-    private SharedPreference mSharedPreference = new SharedPreference();
 
     public FavouritesFragment(){
 
     }
 
+    //On saving instance state, puts the arraylist with locations to be displayed in the bundle.
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -38,6 +37,7 @@ public class FavouritesFragment extends Fragment  implements FavouritesListAdapt
 
     }
 
+    //Constructor taking an arraylist with the chosen locations.
     public FavouritesFragment(ArrayList<Location> locations){
         mLocations = locations;
     }
@@ -45,33 +45,28 @@ public class FavouritesFragment extends Fragment  implements FavouritesListAdapt
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        if (savedInstanceState!=null)
-        {
-            mLocations = savedInstanceState.getParcelableArrayList("locations");
-        }
+        //if there is a saved instance state, fetches the locations from it.
+        if (savedInstanceState!=null) {
+            mLocations = savedInstanceState.getParcelableArrayList("locations"); }
+
         View view =  inflater.inflate(R.layout.recyclerview_favourites, container, false);
 
+        //Creates a recyclerview to display the locations.
         RecyclerView recyclerView = view.findViewById(R.id.favourites_recyclerview);
-         mListAdapter = new FavouritesListAdapter(getActivity(), mLocations, this);
+        mListAdapter = new FavouritesListAdapter(getActivity(), mLocations, this);
         recyclerView.setAdapter(mListAdapter);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
         //Adds a simple divider
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
-
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         return view;
-
     }
-
 
     //starts new activity from click.
     @Override
     public void onLocationClicked(int position) {
         Intent intent = LocationActivity.newIntent(getActivity(), position);
         startActivity(intent);
-
-
     }
 }

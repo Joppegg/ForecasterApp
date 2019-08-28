@@ -1,7 +1,6 @@
 package com.bignerdranch.android.forecastr;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,19 +14,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+/**
+ * This class handles the listadapter for the favourite fragment.
+ *
+ */
 public class FavouritesListAdapter extends RecyclerView.Adapter {
-    SharedPreference mSharedPreference = new SharedPreference();
+    private SharedPreference mSharedPreference = new SharedPreference();
     private Context mContext;
     private static final String TAG = "FavouritesListAdapter";
     private ArrayList<Location> mLocations;
     private OnLocationListener mOnLocationListener;
 
+    //constructor taking the locations to be displayed., the onlocationlistener and the context.
     public FavouritesListAdapter(Context context, ArrayList<Location> locations, OnLocationListener onLocationListener){
         mContext = context;
         mLocations = locations;
         mOnLocationListener = onLocationListener;
     }
-
 
 
     @NonNull
@@ -56,6 +59,7 @@ public class FavouritesListAdapter extends RecyclerView.Adapter {
 
 
         ArrayList<LocationParser> locations = mSharedPreference.getFavourites(mContext);
+
         public ListViewHolder(View itemView, OnLocationListener onLocationListener){
             super(itemView);
             mLocationTemperature = itemView.findViewById(R.id.temperature_text_favourites_list);
@@ -65,32 +69,29 @@ public class FavouritesListAdapter extends RecyclerView.Adapter {
             itemView.setOnClickListener(this);
         }
 
-        //TODO:
-        // if list is null app crashes.
+
         public void bindView(int position){
             Log.i(TAG, "Size: " + locations.size());
             Log.i(TAG, "Position: " + position);
+            //helper class to get the correct weather symbol.
             mWeatherSymbol = new WeatherSymbol();
             mLocationTemperature.setText(mLocations.get(position).getForeCast().get(0).getTemperature());
             mLocationName.setText(locations.get(position).getLocationName());
+            //parses the string value in locations to an int.
             int weatherSymbol = Integer.valueOf(mLocations.get(position).getForeCast().get(0).getWeatherSymbol());
-
+            //sets the correct image resource.
             mWeatherSymbolImageView.setImageResource(mWeatherSymbol.getDrawableResources(weatherSymbol));
-
         }
 
         @Override
         public void onClick(View view) {
-            Toast.makeText(mContext, "Click", Toast.LENGTH_SHORT).show();
+            //onclick-listener to open the correct location view.
             mOnLocationListener.onLocationClicked(getAdapterPosition());
-            Log.i(TAG , "Position: " + getAdapterPosition());
-
         }
     }
 
-
+    //interface in order to handle callbacks to the favourites fragment so it can launch a new activity based on what location was clicked on.
     public interface OnLocationListener {
-
         void onLocationClicked(int position);
     }
 

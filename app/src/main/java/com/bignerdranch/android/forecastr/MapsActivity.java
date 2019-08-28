@@ -57,12 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /**
      * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
+     * By default, sets the location shown to be an overview of Sweden.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -71,8 +66,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
-                Log.i(TAG, "Latlng: " + latLng.latitude + " " +  latLng.longitude);
-
                 mSelectedPosition = latLng;
                 mMap.clear();
                 mMap.addMarker(new MarkerOptions().position(mSelectedPosition));
@@ -88,7 +81,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Build bounds
         LatLngBounds bounds = new LatLngBounds.Builder().include(southWest).include(northEast).build();
-        //int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
 
         //specify dimensions
         int width = getResources().getDisplayMetrics().widthPixels;
@@ -96,13 +88,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int padding = (int) (width * 0.12); // offset from edges of the map 12% of screen
 
         //Animate camera
-
         CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
         mMap.animateCamera(update);
 
     }
 
-    // If user presses back, thus not selecting a location.
+    // Handling user pressing back.
     @Override
     public void onBackPressed() {
         Intent returnIntent = new Intent();

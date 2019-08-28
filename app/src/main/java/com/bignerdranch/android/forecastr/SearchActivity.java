@@ -2,7 +2,6 @@ package com.bignerdranch.android.forecastr;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,25 +16,28 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONException;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+/**
+ * This class handles the Search activity.
+ * Allows the user to search for locations in Sweden using the Google place client.
+ * Also allows the user to save this location to "Favourites", putting an identifier in shared preferences
+ * to be used in other activities.
+ *
+ */
 public class SearchActivity  extends AppCompatActivity {
     private Location mLocationToDisplay;
     PlacesClient mPlacesClient;
@@ -45,18 +46,14 @@ public class SearchActivity  extends AppCompatActivity {
     private Button mSaveButton;
     private Place mPlace;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         final SharedPreference mSharedPreference = new SharedPreference();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
 
-
         mSaveButton = findViewById(R.id.save_button);
-
         //Parses to a locationparser to facilitate serializing to gson.
         mSaveButton.setOnClickListener(new View.OnClickListener() {
            @Override
@@ -64,39 +61,37 @@ public class SearchActivity  extends AppCompatActivity {
                LocationParser locationParserToSave = new LocationParser(mLocationToDisplay);
                if (mSharedPreference.addFavourite(getApplicationContext(), locationParserToSave)){
                    Toast.makeText(getApplicationContext(), mLocationToDisplay.getLocationName(), Toast.LENGTH_SHORT).show();
-
                }
                else{
                    Toast.makeText(getApplicationContext(), "Already saved.", Toast.LENGTH_SHORT).show();
                }
-
            }
        });
 
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        fragment.getView().setBackgroundColor(Color.GRAY);
+        //fragment.getView().setBackgroundColor(Color.GRAY);
 
+        //Initializes places if not initialized.
         if (!Places.isInitialized()){
             Places.initialize(getApplicationContext(), APIKEY);
         }
-
         mPlacesClient = Places.createClient(this);
         final AutocompleteSupportFragment autocompleteSupportFragment =
                 (AutocompleteSupportFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.autocomplete_fragment);
 
+        //Sets the locations able to be selected to only swedish ones.
         autocompleteSupportFragment.setCountry("SE");
         //Sets the place fields when the user clicks on an autocompleted field. ie, selecting Stockholm sets all fields to sthlm-variables.
         autocompleteSupportFragment.setPlaceFields(Arrays.asList(Place.Field.ID,Place.Field.LAT_LNG,Place.Field.NAME));
 
-
-        //Listener for selecting new place.
+        //Listener for selecting new place, executes SearchTask if successful, as well as enables the savebutton.
         autocompleteSupportFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NonNull Place place) {
                 new SearchTask().execute(place);
-              mPlace = place;
+                mPlace = place;
                 mSaveButton.setEnabled(true);
             }
 
@@ -105,8 +100,6 @@ public class SearchActivity  extends AppCompatActivity {
 
             }
         });
-
-
 
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -139,15 +132,14 @@ public class SearchActivity  extends AppCompatActivity {
 
         });
 
+        /**
+         *Handling recovery of saved instance state.
+         */
         if (savedInstanceState != null){
             Log.i(TAG, " not null");
             mPlace = savedInstanceState.getParcelable("place");
             mLocationToDisplay = savedInstanceState.getParcelable("location");
 
-            if (mPlace != null) {
-                Log.i(TAG, mPlace.getName());
-             //   new SearchTask().execute(mPlace);
-            }
         }
 
 
@@ -155,8 +147,8 @@ public class SearchActivity  extends AppCompatActivity {
 
 
     /**
-     * Updates current weather temperature, windspeed etc from the chosen lat/long.
-     *
+     * Fetches the forecast information from the selected location
+     * if it is unable to fetch the requested information it catches these exceptions and sets fetched state to be false.
      *
      */
     private class SearchTask extends AsyncTask<Place,Void,Void> {
@@ -169,9 +161,10 @@ public class SearchActivity  extends AppCompatActivity {
         protected Void doInBackground(Place... params) {
             mIsDataFetchedOk = true;
             mLocationToDisplay = new Location();
-            //set location id.
+
             mPlace = params[0];
 
+            //Set parameters
             mLatLng = mPlace.getLatLng();
             mLocationToDisplay.setLatitude(mLatLng.latitude);
             mLocationToDisplay.setLongitude(mLatLng.longitude);
@@ -181,15 +174,13 @@ public class SearchActivity  extends AppCompatActivity {
             ForecastFetcher fetcher = new ForecastFetcher(mLocationToDisplay);
 
             try {
-                fetcher.printArray();
+                fetcher.fetchForecast();
             }
             catch (IOException ioe){
-                Log.i(TAG, "ioexception");
                 mIsDataFetchedOk = false;
 
             }
             catch (JSONException joe){
-                Log.i(TAG, "jsonexception");
                 mIsDataFetchedOk = false;
             }
 
@@ -197,7 +188,10 @@ public class SearchActivity  extends AppCompatActivity {
         }
 
 
-        //Updates the ui
+        /**
+         * Updates the UI, displaying a the forecast and seekbar fragments if fetch was successful.
+         * if the fetch was not successful, instead shows an errorfragment.
+         */
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
@@ -230,6 +224,9 @@ public class SearchActivity  extends AppCompatActivity {
         }
     }
 
+
+
+    //Saving instancec state.
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);

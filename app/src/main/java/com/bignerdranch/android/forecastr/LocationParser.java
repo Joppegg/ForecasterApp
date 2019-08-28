@@ -1,14 +1,19 @@
 package com.bignerdranch.android.forecastr;
 
 /**
- * Helper class for saving Location to SharedPreferences due to jodaktime issues.
- * Saves the identifiers for the location and allows for executing the forecast fetcher at runtime.
- *
- *
+ * This is a helper class for saving Locations to SharedPreferences due to issues serializing
+ * Joda datetime objects, which is used in Location.
+ * This is a lite-class which contains the latitude, longitude, id and name for a specific location
+ * and allows the Activity to execute the forecast fetcher at runtime.
+
  */
 public class LocationParser {
     private String mLatitude, mLongitude, mLocationName, mLocationId;
 
+    /**
+     * constructor taking a Location and saving it as a LocationParser.
+     * @param location
+     */
     public LocationParser(Location location){
         mLatitude = location.getLatitude();
         mLongitude = location.getLongitude();
@@ -16,35 +21,36 @@ public class LocationParser {
         mLocationId = location.getLocationId();
     }
 
+    /**
+     * gets the latitude from the location.
+     * @return String with latitude.
+     */
     public String getLatitude() {
         return mLatitude;
     }
 
-    public void setLatitude(String latitude) {
-        mLatitude = latitude;
-    }
-
+    /**
+     * gets the longitude from the location.
+     * @return Strign with longitude.
+     */
     public String getLongitude() {
         return mLongitude;
     }
 
-    public void setLongitude(String longitude) {
-        mLongitude = longitude;
-    }
 
+    /**
+     * gets the location name.
+     * @return String with location name.
+     */
     public String getLocationName() {
         return mLocationName;
     }
 
-    public void setLocationName(String locationName) {
-        mLocationName = locationName;
-    }
-
+    /**
+     * gets the location id.
+     * @return String with location id.
+     */
     public String getLocationId() {
         return mLocationId;
-    }
-
-    public void setLocationId(String locationId) {
-        mLocationId = locationId;
     }
 }

@@ -9,6 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+/**
+ * This class handles the listadapter for the forecast list.
+ *
+ */
 public class ForecastListAdapter extends RecyclerView.Adapter {
     private Location mLocation;
     private WeatherSymbol mWeatherSymbol;
@@ -32,9 +37,8 @@ public class ForecastListAdapter extends RecyclerView.Adapter {
         return mLocation.getForeCastMidDay().size();
     }
 
-
     private class ListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        public WeatherSymbol mWeatherSymbol;
+        private WeatherSymbol mWeatherSymbol;
         private TextView mTemperature;
         private TextView mWeekday;
         private ImageView mImageView;
@@ -42,26 +46,22 @@ public class ForecastListAdapter extends RecyclerView.Adapter {
         public ListViewHolder(View itemView){
 
             super(itemView);
+            //sets the parameters.
             mTemperature = itemView.findViewById(R.id.temperature_text_forecast);
             mWeekday = itemView.findViewById(R.id.weekday_text_forecast);
             mImageView = itemView.findViewById(R.id.thumbnail_image);
             itemView.setOnClickListener(this);
         }
 
-        //TODO
-        // CLEAN UP HERE
+
         public void bindView(int position){
+            //uses Weathersymbol to get the correct image resource.
             mWeatherSymbol = new WeatherSymbol();
             String temperature = mLocation.getForeCastMidDay().get(position).getTemperature() + "C°";
             mTemperature.setText(temperature);
             mWeekday.setText(mLocation.getForeCastMidDay().get(position).getDateTime().dayOfWeek().getAsShortText());
-
             int weatherSymbol = Integer.valueOf(mLocation.getForeCastMidDay().get(position).getWeatherSymbol());
             mImageView.setImageResource(mWeatherSymbol.getDrawableResources(weatherSymbol));
-
-
-
-
         }
 
         @Override

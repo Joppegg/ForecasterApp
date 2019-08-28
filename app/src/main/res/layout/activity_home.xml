@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".HomeActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -20,12 +20,12 @@
             android:id="@+id/allow_location_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Update location"/>
+            android:text="@string/update_location"/>
         <Button
             android:id="@+id/update_location_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Select location"/>
+            android:text="@string/select_location"/>
 
 
 
